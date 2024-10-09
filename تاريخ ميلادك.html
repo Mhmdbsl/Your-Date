@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date of Birth Details</title>
+    <!-- إضافة الخط العربي Amiri -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        /* تحديد الخط العربي للنصوص العربية */
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            direction: rtl;
+            font-family: 'Amiri', serif; /* استخدام الخط العربي للنصوص */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        select, input {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px; /* زيادة حجم الزر */
+            background-color: orange;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px; /* زيادة حجم الخط */
+            cursor: pointer;
+            font-family: inherit; /* استخدام الخط الافتراضي */
+        }
+
+        button:hover {
+            background-color: darkorange;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .info-button {
+            display: none;
+            margin-top: 10px;
+            background-color: blue;
+        }
+
+        .zodiac-info {
+            margin-top: 20px;
+            display: none;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <label for="month">Select Month:</label>
+    <select id="month">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+    </select>
+
+    <label for="day">Enter Day:</label>
+    <input type="number" id="day" placeholder="Enter day" min="1" max="31">
+
+    <label for="year">Enter Year:</label>
+    <input type="number" id="year" placeholder="Enter year" min="1900" max="2024">
+
+    <button onclick="showDetails()">إظهار تفاصيل تاريخ الميلاد</button>
+
+    <div class="result" id="result"></div>
+
+    <button class="info-button" id="infoButton" onclick="showZodiacInfo()">معلومات عن البرج</button>
+    <div class="zodiac-info" id="zodiacInfo"></div>
+</div>
+
+<script>
+    const zodiacDetails = {
+        "الجدي": "برج الجدي: عملي، منظم، وجاد.",
+        "الدلو": "برج الدلو: مبدع، مستقل، ويحب التفكير في المستقبل.",
+        "الحوت": "برج الحوت: حساس، عاطفي، ولديه خيال واسع.",
+        "الحمل": "برج الحمل: شجاع، مليء بالطاقة، ومستقل.",
+        "الثور": "برج الثور: ثابت، محب للسلام، وصبور.",
+        "الجوزاء": "برج الجوزاء: ذكي، متحدث بارع، ومرن.",
+        "السرطان": "برج السرطان: عاطفي، محب، ومرتبطة بالعائلة.",
+        "الأسد": "برج الأسد: واثق، كريم، وقائد بالفطرة.",
+        "العذراء": "برج العذراء: عملي، متواضع، ومحلل دقيق.",
+        "الميزان": "برج الميزان: دبلوماسي، عادل، ويحب الجمال.",
+        "العقرب": "برج العقرب: قوي، غامض، وصاحب عزيمة.",
+        "القوس": "برج القوس: متفائل، مغامر، ومحب للحقيقة."
+    };
+
+    function calculateAge(birthDate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    function calculateDays(birthDate) {
+        const today = new Date();
+        const diff = today - birthDate;
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function getZodiac(month, day) {
+        const zodiacSigns = [
+            { sign: "الجدي", startDate: new Date(0, 0, 1), endDate: new Date(0, 0, 19) },
+            { sign: "الدلو", startDate: new Date(0, 0, 20), endDate: new Date(0, 1, 18) },
+            { sign: "الحوت", startDate: new Date(0, 1, 19), endDate: new Date(0, 2, 20) },
+            { sign: "الحمل", startDate: new Date(0, 2, 21), endDate: new Date(0, 3, 19) },
+            { sign: "الثور", startDate: new Date(0, 3, 20), endDate: new Date(0, 4, 20) },
+            { sign: "الجوزاء", startDate: new Date(0, 4, 21), endDate: new Date(0, 5, 20) },
+            { sign: "السرطان", startDate: new Date(0, 5, 21), endDate: new Date(0, 6, 22) },
+            { sign: "الأسد", startDate: new Date(0, 6, 23), endDate: new Date(0, 7, 22) },
+            { sign: "العذراء", startDate: new Date(0, 7, 23), endDate: new Date(0, 8, 22) },
+            { sign: "الميزان", startDate: new Date(0, 8, 23), endDate: new Date(0, 9, 22) },
+            { sign: "العقرب", startDate: new Date(0, 9, 23), endDate: new Date(0, 10, 21) },
+            { sign: "القوس", startDate: new Date(0, 10, 22), endDate: new Date(0, 11, 21) },
+            { sign: "الجدي", startDate: new Date(0, 11, 22), endDate: new Date(0, 11, 31) },
+        ];
+
+        for (const zodiac of zodiacSigns) {
+            const start = zodiac.startDate;
+            const end = zodiac.endDate;
+
+            if ((month === start.getMonth() + 1 && day >= start.getDate()) || 
+                (month === end.getMonth() + 1 && day <= end.getDate())) {
+                return zodiac.sign;
+            }
+        }
+
+        return "Unknown";
+    }
+
+    function isValidDate(year, month, day) {
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === (month - 1) && date.getDate() === day;
+}
+
+function showDetails() {
+    const month = parseInt(document.getElementById("month").value);
+    const day = parseInt(document.getElementById("day").value);
+    const year = parseInt(document.getElementById("year").value);
+
+    if (isNaN(day) || isNaN(year) || day < 1 || year < 1900 || year > new Date().getFullYear() || !isValidDate(year, month, day)) {
+        alert("يرجى إدخال تاريخ ميلاد صالح.");
+        return;
+    }
+
+        const birthDate = new Date(year, month - 1, day);
+        const age = calculateAge(birthDate);
+        const days = calculateDays(birthDate);
+        const zodiac = getZodiac(month, day);
+
+        document.getElementById("result").innerHTML = `
+            <p>العمر: ${age} سنة</p>
+            <p>الأيام: ${days} يوم</p>
+            <p>البرج: ${zodiac}</p>
+        `;
+
+        document.getElementById("infoButton").style.display = "block";
+        document.getElementById("zodiacInfo").style.display = "none";
+    }
+
+    function showZodiacInfo() {
+        const month = parseInt(document.getElementById("month").value);
+        const day = parseInt(document.getElementById("day").value);
+        const zodiac = getZodiac(month, day);
+        const info = zodiacDetails[zodiac] ||"لا توجد معلومات عن هذا البرج.";
+
+        document.getElementById("zodiacInfo").innerHTML = `<p>${info}</p>`;
+        document.getElementById("zodiacInfo").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
